@@ -168,10 +168,6 @@
             return true;
         }
 
-        function addRegistrationDate() {
-            document.getElementById("registrationDate").value = new Date().toLocaleDateString();
-        }
-
         function validateGuildLevel() {
             const guildLevel = document.getElementById("guildLevel").value;
             if (guildLevel < 1 || guildLevel > 100) {
@@ -195,10 +191,7 @@
             progress.style.width = `${(filledInputs.length / inputs.length) * 100}%`;
         }
 
-        window.addEventListener("load", () => {
-            addRegistrationDate();
-            handleFormProgress(); // Inicializa la barra de progreso al cargar
-        });
+        window.addEventListener("load", handleFormProgress);
     </script>
 </head>
 <body class="parallax">
@@ -218,7 +211,7 @@
         <input type="text" id="guildName" name="guildName" placeholder="Nombre del Gremio" required>
 
         <label for="registrationDate">Fecha de Registro:</label>
-        <input type="text" id="registrationDate" name="registrationDate" readonly>
+        <input type="date" id="registrationDate" name="registrationDate" required>
 
         <label for="silverAmount">Cantidad de Silver a abonar:</label>
         <select id="silverAmount" name="silverAmount" required>
@@ -238,8 +231,20 @@
         <input type="number" id="guildLevel" name="guildLevel" placeholder="Nivel del Gremio (1-100)" required>
 
         <label for="reason" class="tooltip" data-tooltip="Explica por qué quieres unirte">Razón para unirse al gremio:</label>
-        <textarea id="reason" name="reason" maxlength="250" oninput="updateCharacterCount(this, 'charCounter', 250)"></textarea>
+        <textarea id="reason" name="reason" maxlength="250" oninput="updateCharacterCount(this, 'charCounter', 250)" required></textarea>
         <div class="char-count" id="charCounter">250 caracteres restantes</div>
+
+        <label for="playerRole" class="tooltip" data-tooltip="Tu rol en el gremio">Rol en el Gremio:</label>
+        <select id="playerRole" name="playerRole" required>
+            <option value="Guerrero">Guerrero</option>
+            <option value="Sanador">Sanador</option>
+            <option value="Recoleccionista">Recoleccionista</option>
+            <option value="Constructor">Constructor</option>
+        </select>
+
+        <label for="experience">Experiencia previa en otros gremios:</label>
+        <textarea id="experience" name="experience" maxlength="250" oninput="updateCharacterCount(this, 'expCharCounter', 250)" required></textarea>
+        <div class="char-count" id="expCharCounter">250 caracteres restantes</div>
 
         <button type="submit">Enviar Solicitud</button>
     </form>
