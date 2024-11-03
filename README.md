@@ -1,2 +1,0 @@
-# tulogica.github.com
-Hola
