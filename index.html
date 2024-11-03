@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,50 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Gremios - Batallas de Albion Online</title>
     <style>
-        /* Estilos principales */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-image: url('https://www.zonammorpg.com/wp-content/uploads/2018/07/albion_merlyn.jpg');
             background-size: cover;
-            background-attachment: fixed;
+            background-position: center;
             color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: background-color 0.3s;
         }
-
         .container {
-            max-width: 640px;
-            background: rgba(0, 0, 0, 0.85);
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            animation: slide-in 1s ease-out;
-            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-
-        @keyframes slide-in {
-            from { transform: translateY(-30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
         h1 {
             text-align: center;
             color: yellow;
             margin-bottom: 20px;
-            font-size: 24px;
         }
-
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
         }
-
         input, select, textarea, button {
             width: 100%;
             padding: 10px;
@@ -58,187 +43,130 @@
             border-radius: 5px;
             font-size: 16px;
         }
-
         button {
             background-color: rgba(255, 0, 0, 0.7);
             color: yellow;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
         }
-
         button:hover {
             background-color: rgba(255, 0, 0, 0.9);
-            transform: scale(1.05);
         }
-
-        .hint {
+        .char-count, .hint, #codeDisplay {
             font-size: 14px;
             color: #ccc;
-            margin-top: -10px;
         }
-
-        .link-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .link-container a {
-            color: yellow;
-            text-decoration: none;
-            transition: text-decoration 0.3s;
-        }
-
-        .link-container a:hover {
-            text-decoration: underline;
-        }
-
-        .char-count {
-            font-size: 12px;
-            color: #ccc;
-            text-align: right;
-        }
-
-        .tooltip {
-            display: inline-block;
-            position: relative;
-        }
-
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 0;
-            top: 100%;
-            margin-top: 5px;
-            padding: 5px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            border-radius: 5px;
-            font-size: 12px;
-            width: max-content;
-        }
-
-        .dark-mode {
-            background-color: #333;
-            color: #fff;
-        }
-
-        /* Efecto parallax */
-        .parallax {
-            background-attachment: fixed;
-        }
-
-        .progress-bar {
-            background: yellow;
-            height: 5px;
-            width: 0;
-            transition: width 0.4s;
-            border-radius: 3px;
+        .hidden {
+            display: none;
         }
     </style>
-
-    <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-        }
-
-        function updateCharacterCount(input, counterId, maxChars) {
-            const countDisplay = document.getElementById(counterId);
-            const remaining = maxChars - input.value.length;
-            countDisplay.textContent = `${remaining} caracteres restantes`;
-            if (remaining < 0) {
-                input.value = input.value.slice(0, maxChars);
-            }
-        }
-
-        function checkForDuplicates() {
-            const email = document.getElementById("email").value;
-            const playerName = document.getElementById("playerName").value;
-            if (localStorage.getItem(email) || localStorage.getItem(playerName)) {
-                alert("Este jugador o correo ya ha sido registrado.");
-                return false;
-            }
-            localStorage.setItem(email, "registered");
-            localStorage.setItem(playerName, "registered");
-            return true;
-        }
-
-        function addRegistrationDate() {
-            document.getElementById("registrationDate").value = new Date().toLocaleDateString();
-        }
-
-        function validateGuildLevel() {
-            const guildLevel = document.getElementById("guildLevel").value;
-            if (guildLevel < 1 || guildLevel > 100) {
-                alert("El nivel del gremio debe estar entre 1 y 100.");
-                return false;
-            }
-            return true;
-        }
-
-        function showPreview() {
-            const preview = [...new FormData(document.getElementById('registrationForm')).entries()]
-                .map(([key, val]) => `${key}: ${val}`)
-                .join("\n");
-            alert("Por favor, revisa tu formulario:\n\n" + preview);
-        }
-
-        function handleFormProgress() {
-            const inputs = document.querySelectorAll('#registrationForm input, #registrationForm select, #registrationForm textarea');
-            const filledInputs = Array.from(inputs).filter(input => input.value);
-            const progress = document.getElementById("progressBar");
-            progress.style.width = `${(filledInputs.length / inputs.length) * 100}%`;
-        }
-
-        window.addEventListener("load", addRegistrationDate);
-    </script>
 </head>
-<body class="parallax">
+<body>
 
 <div class="container">
-    <h1>Registro de Gremios en Batallas de Albion Online</h1>
-    <div class="progress-bar" id="progressBar"></div>
+    <h1>Registro de Gremios</h1>
+    <form id="registrationForm" onsubmit="validateAndSubmit(event);">
 
-    <form id="registrationForm" oninput="handleFormProgress()" onsubmit="if (checkForDuplicates() && validateGuildLevel()) { showPreview(); } else { event.preventDefault(); }">
+        <!-- Campo oculto honeypot para bots -->
+        <input type="text" name="botField" id="botField" class="hidden" autocomplete="off">
 
-        <label for="email" class="tooltip" data-tooltip="Introduce tu correo Gmail">Correo Gmail:</label>
+        <!-- Información básica -->
+        <label for="email">Correo:</label>
         <input type="email" id="email" name="email" placeholder="Tu correo Gmail" required>
 
-        <label for="playerName" class="tooltip" data-tooltip="Nombre con el que juegas">Nombre de Jugador:</label>
+        <label for="playerName">Nombre de Jugador:</label>
         <input type="text" id="playerName" name="playerName" placeholder="Nombre de Jugador" required>
 
-        <label for="guildName" class="tooltip" data-tooltip="Nombre de tu gremio">Nombre del Gremio:</label>
+        <label for="guildName">Nombre del Gremio:</label>
         <input type="text" id="guildName" name="guildName" placeholder="Nombre del Gremio" required>
 
-        <label for="registrationDate">Fecha de Registro:</label>
-        <input type="text" id="registrationDate" name="registrationDate" readonly>
+        <label for="guildLevel">Nivel del Gremio:</label>
+        <input type="number" id="guildLevel" name="guildLevel" placeholder="Nivel del Gremio (1-100)" min="1" max="100" required>
 
-        <label for="silverAmount">Cantidad de Silver a abonar:</label>
-        <select id="silverAmount" name="silverAmount" required>
-            <optgroup label="Gremio Bajo Nivel">
-                <option value="1000000">1M</option>
-                <option value="2000000">2M</option>
-            </optgroup>
-            <optgroup label="Gremio Nivel Medio">
-                <option value="6000000">6M</option>
-            </optgroup>
-            <optgroup label="Gremio Nivel Experto">
-                <option value="15000000">15M</option>
-            </optgroup>
-        </select>
-
-        <label for="guildLevel" class="tooltip" data-tooltip="Nivel de experiencia de tu gremio">Nivel del Gremio:</label>
-        <input type="number" id="guildLevel" name="guildLevel" placeholder="Nivel del Gremio (1-100)" required>
-
-        <label for="reason" class="tooltip" data-tooltip="Explica por qué quieres unirte">Razón para unirse al gremio:</label>
-        <textarea id="reason" name="reason" maxlength="250" oninput="updateCharacterCount(this, 'charCounter', 250)"></textarea>
-        <div class="char-count" id="charCounter">250 caracteres restantes</div>
+        <!-- Código de verificación dinámico -->
+        <div id="codeDisplay">Código: <strong id="verificationCode"></strong></div>
+        <label for="codeInput">Ingresa el código anterior:</label>
+        <input type="text" id="codeInput" required>
 
         <button type="submit">Enviar Solicitud</button>
     </form>
-
-    <button onclick="toggleDarkMode()">Alternar Modo Claro/Oscuro</button>
 </div>
+
+<script>
+    // Generar código de verificación dinámico
+    function generateVerificationCode() {
+        const code = Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('verificationCode').textContent = code;
+        return code;
+    }
+
+    const verificationCode = generateVerificationCode();
+
+    // Contador de intentos de envío
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    function validateAndSubmit(event) {
+        event.preventDefault();
+
+        // Verificar honeypot
+        if (document.getElementById('botField').value) {
+            alert("Solicitud rechazada.");
+            return;
+        }
+
+        // Validar el código de verificación
+        const codeInput = document.getElementById('codeInput').value;
+        if (codeInput != verificationCode) {
+            alert("Código de verificación incorrecto. Inténtalo nuevamente.");
+            return;
+        }
+
+        // Limitar intentos de envío
+        if (attempts >= maxAttempts) {
+            alert("Has alcanzado el límite de envíos permitidos.");
+            return;
+        }
+        attempts++;
+
+        // Verificar datos válidos
+        const email = document.getElementById("email").value;
+        const playerName = document.getElementById("playerName").value;
+        const guildName = document.getElementById("guildName").value;
+        const guildLevel = document.getElementById("guildLevel").value;
+
+        if (!email || !playerName || !guildName || !guildLevel) {
+            alert("Por favor, llena todos los campos.");
+            return;
+        }
+
+        // Almacenar los datos en localStorage para limitar envíos
+        const existingSubmissions = localStorage.getItem(email) || 0;
+        if (existingSubmissions >= maxAttempts) {
+            alert("Has alcanzado el límite de envíos para esta dirección de correo.");
+            return;
+        }
+        localStorage.setItem(email, Number(existingSubmissions) + 1);
+
+        alert("Formulario enviado con éxito.");
+        document.getElementById("registrationForm").reset();
+        generateVerificationCode();  // Genera un nuevo código de verificación después del envío
+    }
+
+    // Orden aleatorio de campos
+    function shuffleFields() {
+        const form = document.getElementById("registrationForm");
+        const fields = Array.from(form.elements);
+        for (let i = fields.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [fields[i], fields[j]] = [fields[j], fields[i]];
+        }
+        fields.forEach(field => form.appendChild(field));
+    }
+
+    // Generar código al cargar
+    shuffleFields();
+</script>
 
 </body>
 </html>
