@@ -12,31 +12,45 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('https://fotografias.lasexta.com/clipping/cmsimages02/2022/11/23/7C688EAA-BCD6-48C9-B537-4DA9C4D7534E/universo_96.jpg?crop=1365,768,x0,y0&width=1200&height=675&optimize=low&format=webply');
+            background-image: url('https://www.zonammorpg.com/wp-content/uploads/2018/07/albion_merlyn.jpg');
             background-size: cover;
+            background-attachment: fixed;
             color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            transition: background-color 0.3s;
         }
+
         .container {
-            max-width: 600px;
-            background: rgba(0, 0, 0, 0.8);
+            max-width: 640px;
+            background: rgba(0, 0, 0, 0.85);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            animation: slide-in 1s ease-out;
+            position: relative;
         }
+
+        @keyframes slide-in {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         h1 {
             text-align: center;
             color: yellow;
             margin-bottom: 20px;
+            font-size: 24px;
         }
+
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
         }
+
         input, select, textarea, button {
             width: 100%;
             padding: 10px;
@@ -45,103 +59,99 @@
             border-radius: 5px;
             font-size: 16px;
         }
+
         button {
             background-color: rgba(255, 0, 0, 0.7);
             color: yellow;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
         }
+
         button:hover {
             background-color: rgba(255, 0, 0, 0.9);
+            transform: scale(1.05);
         }
+
         .hint {
             font-size: 14px;
             color: #ccc;
             margin-top: -10px;
         }
+
         .link-container {
             text-align: center;
             margin-top: 20px;
         }
+
         .link-container a {
             color: yellow;
             text-decoration: none;
+            transition: text-decoration 0.3s;
         }
+
         .link-container a:hover {
             text-decoration: underline;
         }
+
         .char-count {
             font-size: 12px;
             color: #ccc;
             text-align: right;
         }
+
+        .tooltip {
+            display: inline-block;
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 5px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 5px;
+            font-size: 12px;
+            width: max-content;
+        }
+
+        .dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* Efecto parallax */
+        .parallax {
+            background-attachment: fixed;
+        }
+
+        .progress-bar {
+            background: yellow;
+            height: 5px;
+            width: 0;
+            transition: width 0.4s;
+            border-radius: 3px;
+        }
     </style>
+
     <script>
-        let submissionCount = 0;
-        const maxSubmissions = 10;
-        const maxCharacters = 500; // Caracteres máximos para el campo de Razón
-
-        // Límite de envíos por IP
-        function checkSubmissionLimit() {
-            const ip = localStorage.getItem("ip") || Math.floor(Math.random() * 1000); // IP simulada
-            submissionCount = parseInt(localStorage.getItem(ip) || 0);
-            if (submissionCount >= maxSubmissions) {
-                alert("Has alcanzado el límite de envíos desde esta IP.");
-                return false;
-            }
-            submissionCount++;
-            localStorage.setItem(ip, submissionCount);
-            return true;
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
         }
 
-        // Codificar datos y simular envío
-        function encodeAndSendForm(event) {
-            event.preventDefault();
-            if (!checkSubmissionLimit()) return;  // Validación de envíos
-
-            const formData = new FormData(event.target);
-            const entries = [...formData.entries()];
-            const encodedEntries = entries.map(
-                ([key, value]) => encodeURIComponent(key) + '=' + encodeURIComponent(value)
-            ).join('&');
-
-            const url = `https://formsubmit.co/thesistemanom@gmail.com?${encodedEntries}`;
-            window.location.href = url;
-            alert("Solicitud enviada. Recibirás una copia en tu correo.");
-        }
-
-        // Visualizar grupo de WhatsApp y enlace de descarga al añadir teléfono
-        function showExtraLinks() {
-            document.getElementById('whatsappLink').style.display = 'block';
-            document.getElementById('albionAppLink').style.display = 'block';
-        }
-
-        // Confirmación antes de enviar
-        function showPreview() {
-            const preview = [...new FormData(document.getElementById('registrationForm')).entries()]
-                .map(([key, val]) => `${key}: ${val}`)
-                .join("\n");
-            alert("Por favor, revisa tu formulario:\n\n" + preview);
-        }
-
-        // Modo Claro/Oscuro
-        function toggleTheme() {
-            document.body.classList.toggle("light-mode");
-        }
-
-        // Contador de caracteres para campo de Razón
-        function updateCharacterCount() {
-            const reasonField = document.getElementById("reason");
-            const countDisplay = document.getElementById("charCount");
-            const remaining = maxCharacters - reasonField.value.length;
+        function updateCharacterCount(input, counterId, maxChars) {
+            const countDisplay = document.getElementById(counterId);
+            const remaining = maxChars - input.value.length;
             countDisplay.textContent = `${remaining} caracteres restantes`;
             if (remaining < 0) {
-                reasonField.value = reasonField.value.slice(0, maxCharacters);
-                countDisplay.textContent = `0 caracteres restantes`;
+                input.value = input.value.slice(0, maxChars);
             }
         }
 
-        // Verificación de duplicados en nombre de jugador y correo
         function checkForDuplicates() {
             const email = document.getElementById("email").value;
             const playerName = document.getElementById("playerName").value;
@@ -154,12 +164,10 @@
             return true;
         }
 
-        // Fecha de registro automática
         function addRegistrationDate() {
             document.getElementById("registrationDate").value = new Date().toLocaleDateString();
         }
 
-        // Validación de nivel de gremio para rangos correctos
         function validateGuildLevel() {
             const guildLevel = document.getElementById("guildLevel").value;
             if (guildLevel < 1 || guildLevel > 100) {
@@ -168,73 +176,70 @@
             }
             return true;
         }
+
+        function showPreview() {
+            const preview = [...new FormData(document.getElementById('registrationForm')).entries()]
+                .map(([key, val]) => `${key}: ${val}`)
+                .join("\n");
+            alert("Por favor, revisa tu formulario:\n\n" + preview);
+        }
+
+        function handleFormProgress() {
+            const inputs = document.querySelectorAll('#registrationForm input, #registrationForm select, #registrationForm textarea');
+            const filledInputs = Array.from(inputs).filter(input => input.value);
+            const progress = document.getElementById("progressBar");
+            progress.style.width = `${(filledInputs.length / inputs.length) * 100}%`;
+        }
+
+        window.addEventListener("load", addRegistrationDate);
     </script>
 </head>
-<body onload="addRegistrationDate();">
+<body class="parallax">
 
 <div class="container">
-    <h1>Registro de Gremios</h1>
-    <form id="registrationForm" onsubmit="if (checkForDuplicates() && validateGuildLevel()) { showPreview(); encodeAndSendForm(event); } else { event.preventDefault(); }">
+    <h1>Registro de Gremios en Batallas de Albion Online</h1>
+    <div class="progress-bar" id="progressBar"></div>
 
-        <!-- Información básica -->
-        <label for="email">Correo Gmail:</label>
+    <form id="registrationForm" oninput="handleFormProgress()" onsubmit="if (checkForDuplicates() && validateGuildLevel()) { showPreview(); } else { event.preventDefault(); }">
+
+        <label for="email" class="tooltip" data-tooltip="Introduce tu correo Gmail">Correo Gmail:</label>
         <input type="email" id="email" name="email" placeholder="Tu correo Gmail" required>
 
-        <label for="playerName">Nombre de Jugador:</label>
+        <label for="playerName" class="tooltip" data-tooltip="Nombre con el que juegas">Nombre de Jugador:</label>
         <input type="text" id="playerName" name="playerName" placeholder="Nombre de Jugador" required>
 
-        <label for="serverName">Nombre del Servidor:</label>
-        <input type="text" id="serverName" name="serverName" placeholder="Nombre del Servidor" required>
-
-        <label for="guildName">Nombre del Gremio:</label>
+        <label for="guildName" class="tooltip" data-tooltip="Nombre de tu gremio">Nombre del Gremio:</label>
         <input type="text" id="guildName" name="guildName" placeholder="Nombre del Gremio" required>
 
         <label for="registrationDate">Fecha de Registro:</label>
         <input type="text" id="registrationDate" name="registrationDate" readonly>
 
-        <!-- Cantidad de Silver -->
         <label for="silverAmount">Cantidad de Silver a abonar:</label>
         <select id="silverAmount" name="silverAmount" required>
             <optgroup label="Gremio Bajo Nivel">
                 <option value="1000000">1M</option>
                 <option value="2000000">2M</option>
-                <option value="3000000">3M</option>
             </optgroup>
             <optgroup label="Gremio Nivel Medio">
                 <option value="6000000">6M</option>
-                <option value="7000000">7M</option>
             </optgroup>
             <optgroup label="Gremio Nivel Experto">
                 <option value="15000000">15M</option>
-                <option value="20000000">20M</option>
             </optgroup>
         </select>
 
-        <!-- Número de teléfono y enlaces adicionales -->
-        <label for="phoneNumber">Número de Teléfono:</label>
-        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Número de Teléfono" oninput="showExtraLinks()" required>
-        <div class="link-container" id="whatsappLink" style="display:none;">
-            <a href="https://chat.whatsapp.com/DvPvF9dK41gCMXAjQdDyII" target="_blank">Unirse al grupo de WhatsApp</a>
-        </div>
-        <div class="link-container" id="albionAppLink" style="display:none;">
-            <a href="http://www.appcreator24.com/app3343546-18td2f" target="_blank">Descargar la App de AlbionZone</a>
-        </div>
-
-        <label for="guildLevel">Nivel del Gremio:</label>
+        <label for="guildLevel" class="tooltip" data-tooltip="Nivel de experiencia de tu gremio">Nivel del Gremio:</label>
         <input type="number" id="guildLevel" name="guildLevel" placeholder="Nivel del Gremio (1-100)" required>
 
-        <!-- Campo de razón con contador de caracteres -->
-        <label for="reason">Razón para unirse al gremio:</label>
-        <textarea id="reason" name="reason" maxlength="500" oninput="updateCharacterCount()"></textarea>
-        <div class="char-count" id="charCount">500 caracteres restantes</div>
+        <label for="reason" class="tooltip" data-tooltip="Explica por qué quieres unirte">Razón para unirse al gremio:</label>
+        <textarea id="reason" name="reason" maxlength="250" oninput="updateCharacterCount(this, 'charCounter', 250)"></textarea>
+        <div class="char-count" id="charCounter">250 caracteres restantes</div>
 
         <button type="submit">Enviar Solicitud</button>
     </form>
 
-    <!-- Alternar modo claro/oscuro -->
-    <button onclick="toggleTheme()">Alternar Modo Claro/Oscuro</button>
+    <button onclick="toggleDarkMode()">Alternar Modo Claro/Oscuro</button>
 </div>
 
 </body>
 </html>
-
